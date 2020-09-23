@@ -1,1 +1,1 @@
-package mortal.repeatcheck;
+package mortal.text.similarity;
