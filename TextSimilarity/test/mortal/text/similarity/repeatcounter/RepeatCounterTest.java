@@ -22,7 +22,7 @@ class RepeatCounterTest {
 	@MethodSource
 	void testContrastFile(String[] str1, String[] str2, int min, PrintWriter output)
 	{
-		String[][] res = RepeatCounter.contrast(str1,str2,min);
+		String[][] res = Sentence.getAllRepeatWords(str1,str2,min);
 		for(int i=0; i<res.length; i++)
 				output.println(Arrays.toString(res[i]) + "\n");
 	}
@@ -51,7 +51,7 @@ class RepeatCounterTest {
 	@ParameterizedTest
 	@MethodSource
 	void testContrast(String[] str1, String[] str2, int min, String[][] result) {
-		String[][] res = RepeatCounter.contrast(str1, str2, min);
+		String[][] res = Sentence.getAllRepeatWords(str1, str2, min);
 		assertArrayEquals(result, res);
 		
 		System.out.println(Arrays.deepToString(res));
