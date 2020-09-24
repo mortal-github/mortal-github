@@ -1,0 +1,11 @@
+TEXT SIMILARITY IS 0.55
+origin  file is /home/mortal/git/mortal-github/TextSimilarity/resource/test/orig.txt
+checked file is /home/mortal/git/mortal-github/TextSimilarity/resource/test/orig_0.8_del.txt
+
+MORE DETAILS : 
+origin  file has 8493 character.
+checked file has 6835 character.
+origin  file has 0 character which Repeat in checked file!
+checked file has 3791 character which Repeat in origin  file!
+
+
