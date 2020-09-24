@@ -31,7 +31,7 @@ class RepeatRateTest {
 		
 		Path text = Paths.get(System.getProperty("user.dir"), "resource", "test");
 				
-		int range = 100;
+		int range = 1000;
 		int min = 2;
 		try {
 			String[] orig = new String(Files.readAllBytes(text.resolve("orig.txt"))).split("(?=(?<=。))");
@@ -41,11 +41,11 @@ class RepeatRateTest {
 			String[] orig_0_8_dis_10 = new String(Files.readAllBytes(text.resolve("orig_0.8_dis_10.txt"))).split("(?=(?<=。))");
 			String[] orig_0_8_dis_15 = new String(Files.readAllBytes(text.resolve("orig_0.8_dis_15.txt"))).split("(?=(?<=。))");
 			
-			list.add(Arguments.arguments(orig, orig_0_8_add, range, min));
-			list.add(Arguments.arguments(orig, orig_0_8_del, range, min));
-			list.add(Arguments.arguments(orig, orig_0_8_dis_1, range, min));
-			list.add(Arguments.arguments(orig, orig_0_8_dis_10, range, min));
-			list.add(Arguments.arguments(orig, orig_0_8_dis_15, range, min));
+			list.add(Arguments.arguments(orig, orig_0_8_add, orig_0_8_add.length-1, min));
+			list.add(Arguments.arguments(orig, orig_0_8_del, orig_0_8_del.length-1, min));
+			list.add(Arguments.arguments(orig, orig_0_8_dis_1, orig_0_8_dis_1.length-1, min));
+			list.add(Arguments.arguments(orig, orig_0_8_dis_10,orig_0_8_dis_10.length-1, min));
+			list.add(Arguments.arguments(orig, orig_0_8_dis_15, orig_0_8_dis_15.length-1, min));
 			
 		} catch (IOException e) {
 			
