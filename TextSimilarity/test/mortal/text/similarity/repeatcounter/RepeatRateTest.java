@@ -18,7 +18,7 @@ class RepeatRateTest {
 	void testRepeatRate(String[] sentence1, String[] sentence2, int range, int min) {
 		
 		RepeatRate repeat_rate = new RepeatRate(sentence1, sentence2);
-		repeat_rate.calculate(range, min);
+		repeat_rate.calculateRepeat1(range, min);
 		double repeat2 = repeat_rate.getRepeatRate2();
 		double repeat1 = repeat_rate.getRepeatRate1();
 		

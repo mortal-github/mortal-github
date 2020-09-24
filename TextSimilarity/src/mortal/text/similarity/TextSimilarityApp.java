@@ -12,6 +12,7 @@ public class TextSimilarityApp {
 	
 	public static void main(String[] args)
 	{
+		long millis = System.currentTimeMillis();
 		if(args.length != 3)
 		{
 			throw new IllegalArgumentException("请输入 3 个合法的文件文件路径作为参数");
@@ -29,12 +30,16 @@ public class TextSimilarityApp {
 			
 			double percentage = 0.99;
 			int min = 2;
+			
+			
 			RepeatRate repeat = new RepeatRate(origin_sentence,checked_sentence);
-			repeat.calculate((int)(percentage * checked_sentence.length ), min);
-		
+			repeat.calculateRepeat2((int)(percentage * checked_sentence.length ), min);
+			
+			
 			double similar = repeat.getRepeatRate2();
-		
-			String answer = "Text similarity is ".toUpperCase() + similar + "\n"
+			similar =((double)((int)( Math.round(((double) ((int)(similar*1000)) ))/10)))/100;//四如五入2位精度
+			
+		 	String answer = "Text similarity is ".toUpperCase() + similar + "\n"
 					+ "origin  file is " + origin_path.toString() + "\n"
 					+ "checked file is " + checked_path.toString() + "\n"
 					+ "\nmore details : ".toUpperCase() + "\n"
@@ -56,10 +61,15 @@ public class TextSimilarityApp {
 			writer.close();
 			System.out.println("Answer had writed in file :" + result_path.toString() +  "\n");
 			
+			System.out.println("文本相似度算法用时 ： " + repeat.getCalculateTimeMillis2() + " millis.");
+			System.out.println("IKAnalyzer分词工具分词用时 ： " + repeat.getSegmentTimeMillis() + " millis.");
+			
 		} catch (IOException e) {
 		
 			e.printStackTrace();
 		}
+		millis = System.currentTimeMillis() - millis;
+		System.out.println("程序总用时 ： " + millis + " millis");
 		
 	}
 	

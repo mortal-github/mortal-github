@@ -22,6 +22,10 @@ public class RepeatRate {
 	private double repeat_rate1 = 0;
 	private double repeat_rate2 = 0;
 	
+	private long segment_time_millis = 0;
+	private long calculate_time_millis1 = 0;
+	private long calculate_time_millis2 = 0;
+	
 	/**
 	 * @param sentences 句子数组，将句子数组中的每一个句子分词成一个词组(即词语数组)。
 	 * @param counter 接受一个参数，在分词过程中对每一个词语调用该方法。主要用来计数字符总数
@@ -68,6 +72,7 @@ public class RepeatRate {
 				throw new IllegalArgumentException("sentences1[" + i + "].length() = " + sentences1[i].length() + ". but must not less than 1.");
 		}
 			
+		
 		for(int i=0; i<sentences2.length; i++)
 		{
 			if(sentences2[i] == null)
@@ -76,11 +81,14 @@ public class RepeatRate {
 				throw new IllegalArgumentException("sentences2[" + i + "].length() = " + sentences2[i].length() + ". but must not less than 1.");
 		}
 		
+		long millis = System.currentTimeMillis();
 		RepeatRate.segment(sentences1, this.wordsArray1, word->{this.total_count1 += word.length();});
 		RepeatRate.segment(sentences2, this.wordsArray2, word->{this.total_count2 += word.length();});
+		millis = System.currentTimeMillis()-millis;
+		this.segment_time_millis = millis;
 	}
 		
-	public void calculate(int range, int min)
+	public void calculateRepeat1(int range, int min)
 	{
 		int length1 = this.wordsArray1.size();
 		int length2 = this.wordsArray2.size();
@@ -89,12 +97,14 @@ public class RepeatRate {
 		
 		//计算前先清零
 		this.total_repeat1=0;
-		this.total_repeat2=0;
+		//this.total_repeat2=0;
+		
+		long millis = System.currentTimeMillis();
 		
 		for(i=0; i<length1; i++)
 		{
 			int max_repeat1=0;
-			int max_repeat2=0;
+			//int max_repeat2=0;
 			
 			int end =  i+range < length2 ? i+range : length2;
 			for(j = i-range > 0 ? j-range : 0 ; j<end; j++)
@@ -102,20 +112,59 @@ public class RepeatRate {
 				RepeatWords words = new RepeatWords(this.wordsArray1.get(i), this.wordsArray2.get(j), min);
 				words.calculate();
 				int repeat1 = words.getTotal1();
-				int repeat2 = words.getTotal2();
+				//int repeat2 = words.getTotal2();
 				
 				max_repeat1 = repeat1 > max_repeat1 ? repeat1 : max_repeat1;
-				max_repeat2 = repeat2 > max_repeat2 ? repeat2 : max_repeat2;
+				//max_repeat2 = repeat2 > max_repeat2 ? repeat2 : max_repeat2;
 			}
 			this.total_repeat1 += max_repeat1;
-			this.total_repeat2 += max_repeat2;
+			//this.total_repeat2 += max_repeat2;
 		}
 		
 		//计算相似率
 		this.repeat_rate1 = ((double)this.total_repeat1) / ((double)this.total_count1); 
-		this.repeat_rate2 = ((double)this.total_repeat2) / ((double)this.total_count2); 
+		//this.repeat_rate2 = ((double)this.total_repeat2) / ((double)this.total_count2); 
+		
+		millis = System.currentTimeMillis() -millis;
+		this.calculate_time_millis1 = millis;
 	}
 	
+	public void calculateRepeat2(int range, int min)
+	{
+		int length1 = this.wordsArray1.size();
+		int length2 = this.wordsArray2.size();
+		int i=0;
+		int j=0;
+		
+		//计算前先清零
+		this.total_repeat2=0;
+		
+		long millis = System.currentTimeMillis();
+		
+		for(i=0; i<length2; i++)
+		{
+			int max_repeat2=0;
+			
+			int end =  i+range < length1 ? i+range : length1;
+			for(j = i-range > 0 ? j-range : 0 ; j<end; j++)
+			{
+				RepeatWords words = new RepeatWords(this.wordsArray2.get(i), this.wordsArray1.get(j), min);
+				words.calculate();
+				int repeat2 = words.getTotal2();
+				
+				max_repeat2 = repeat2 > max_repeat2 ? repeat2 : max_repeat2;
+			}
+
+			this.total_repeat2 += max_repeat2;
+		}
+		
+		//计算相似率
+		this.repeat_rate2 = ((double)this.total_repeat2) / ((double)this.total_count2); 
+		
+		millis = System.currentTimeMillis() -millis;
+		this.calculate_time_millis2 = millis;
+	}
+
 	public double getRepeatRate1()
 	{
 		return this.repeat_rate1;
@@ -141,6 +190,19 @@ public class RepeatRate {
 	public int getTotalCount2()
 	{
 		return this.total_count2;
+	}
+	
+	public long getSegmentTimeMillis()
+	{
+		return this.segment_time_millis;
+	}
+	public long getCalculateTimeMillis1()
+	{
+		return this.calculate_time_millis1;
+	}
+	public long getCalculateTimeMillis2()
+	{
+		return this.calculate_time_millis2;
 	}
 	
 	
