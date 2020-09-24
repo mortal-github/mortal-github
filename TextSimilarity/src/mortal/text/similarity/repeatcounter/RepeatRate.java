@@ -23,7 +23,6 @@ public class RepeatRate {
 	private double repeat_rate2 = 0;
 	
 	/**
-	 * 
 	 * @param sentences 句子数组，将句子数组中的每一个句子分词成一个词组(即词语数组)。
 	 * @param counter 接受一个参数，在分词过程中对每一个词语调用该方法。主要用来计数字符总数
 	 * @parm wordsArray 分词结果储存在{@code wordsArray}
@@ -124,6 +123,24 @@ public class RepeatRate {
 	public double getRepeatRate2()
 	{
 		return this.repeat_rate2;
+	}
+	
+	public int getTotalRepeat1()
+	{
+		return this.total_repeat1;
+	}
+	public int getTotalRepeat2()
+	{
+		return this.total_repeat2;
+	}
+	
+	public int getTotalCount1()
+	{
+		return this.total_count1;
+	}
+	public int getTotalCount2()
+	{
+		return this.total_count2;
 	}
 	
 	
