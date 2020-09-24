@@ -44,8 +44,12 @@ public class RepeatRate {
 				while((lex = ik.next()) != null)
 				{
 					String word = lex.getLexemeText();
-					counter.accept(word);
-					list.add(word);
+					
+					if(word != null && word.length() > 0)//避免分出空串
+					{
+						counter.accept(word);
+						list.add(word);
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -61,11 +65,13 @@ public class RepeatRate {
 	{
 		Objects.requireNonNull(sentences1);
 		Objects.requireNonNull(sentences2);
-		
-		for(String str: sentences1)
-			Objects.requireNonNull(str);
-		for(String str: sentences2)
-			Objects.requireNonNull(str);
+		for(int i=0; i<sentences1.length; i++)
+			if(sentences1[i] == null)
+				throw new NullPointerException("sentences1[" + i + "] must not null!" );
+		for(int i=0; i<sentences2.length; i++)
+			if(sentences2[i] == null)
+				throw new  NullPointerException("sentences2[" + i + "] must not null!" );
+	
 
 		this.wordsArray1 = RepeatRate.segment(sentences1, word->{this.total_count1 += word.length();});
 		this.wordsArray2 = RepeatRate.segment(sentences2, word->{this.total_count2 += word.length();});

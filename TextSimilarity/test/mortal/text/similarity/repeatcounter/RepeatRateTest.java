@@ -25,15 +25,13 @@ class RepeatRateTest {
 		
 		System.out.println(repeat);
 		
-	
-		
 	}
 	static List<Arguments> testRepeatRate() {
 		ArrayList<Arguments> list = new ArrayList<>();
 		
 		Path text = Paths.get(System.getProperty("user.dir"), "resource", "test");
 				
-		int range = 5;
+		int range = 100;
 		int min = 2;
 		try {
 			String[] orig = new String(Files.readAllBytes(text.resolve("orig.txt"))).split("(?=(?<=。))");

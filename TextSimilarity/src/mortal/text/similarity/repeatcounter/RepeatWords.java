@@ -17,18 +17,24 @@ public class RepeatWords
 	//控制信息
 	private int min;	//连续重复的词语数量必须超过或等于该变量才记如重复。
 	
-	
 	public RepeatWords(String[] words1, String[] words2, int min)
 	{
 		Objects.requireNonNull(words1);
 		Objects.requireNonNull(words2);
+		int length1 = words1.length;
+		int length2 = words2.length;
+		
+		if(length1 < 1)
+			throw new IllegalArgumentException("words1.length must not less than 1");
+		if(length2 < 1)
+			throw new IllegalArgumentException("words2.length must not less than 1");
+		
 		for(String word : words1)
 			Objects.requireNonNull(word);
 		for(String word : words2)
 			Objects.requireNonNull(word);
 		
-		int length1 = words1.length;
-		int length2 = words2.length;
+		
 		
 		this.min = min;
 		
@@ -76,7 +82,9 @@ public class RepeatWords
 		for(int i=0; i<raw; i++)
 		{
 			
-			mx_col[i] = this.words1[i].equals(this.words2[0]) ? 1 : 0;
+			mx_col[i] =
+					this.words1[i]
+							.equals(this.words2[0]) ? 1 : 0;
 			
 		}
 		
