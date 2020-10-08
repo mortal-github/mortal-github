@@ -1,6 +1,7 @@
 package pair.autoexam;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Stack<E> {
@@ -42,7 +43,7 @@ public class Stack<E> {
 	 * 将元素入栈.
 	 * @param element
 	 */
-	public void Push(E element)
+	public void push(E element)
 	{
 		Objects.requireNonNull(elements);
 		//扩容
@@ -60,7 +61,7 @@ public class Stack<E> {
 	 * 元素出栈,失败返回null
 	 * @return
 	 */
-	public E Pop()
+	public E pop()
 	{
 		if(0 == this.top)
 			return null;
@@ -75,7 +76,7 @@ public class Stack<E> {
 	 *查看栈顶元素，失败返回null。
 	 * @return
 	 */
-	public E Top()
+	public E top()
 	{
 		if(0 == this.top)
 			return null;
@@ -83,5 +84,13 @@ public class Stack<E> {
 			return this.elements[this.top-1];
 	}
 	
-
+	public int size()
+	{
+		return this.top;
+	}
+	
+	public E[] toArray()
+	{
+		return Arrays.copyOfRange(elements, 0, this.top);
+	}
 }

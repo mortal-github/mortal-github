@@ -40,8 +40,8 @@ class StackTest {
 	void testPushAndTop() {
 		for(int i = 0 ; i < StackTest.elements.length; i++)
 		{
-			this.stack.Push(StackTest.elements[i]);
-			String element = this.stack.Top();
+			this.stack.push(StackTest.elements[i]);
+			String element = this.stack.top();
 			Assertions.assertEquals(StackTest.elements[i], element);
 		}
 	}
@@ -50,16 +50,16 @@ class StackTest {
 	void testPop() {
 		for(int i = 0 ; i < StackTest.elements.length; i++)
 		{
-			this.stack.Push(StackTest.elements[i]);
+			this.stack.push(StackTest.elements[i]);
 		}
 		for(int i = StackTest.elements.length-1 ; i >=0 ;i--)
 		{
-			String element = this.stack.Pop();
+			String element = this.stack.pop();
 			Assertions.assertEquals(StackTest.elements[i], element);
 		}
 		for(int i = 0; i< 10; i++)
 		{
-			String element = this.stack.Pop();
+			String element = this.stack.pop();
 			Assertions.assertEquals(null, element);
 		}
 	}
