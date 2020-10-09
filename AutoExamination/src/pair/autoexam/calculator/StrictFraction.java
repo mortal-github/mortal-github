@@ -87,8 +87,8 @@ public class StrictFraction {
 		int factor = StrictFraction.divisionAlgorithm(max, min);
 		//最小公倍数求法[a,b]=a*b/(a,b)=a/(a,b) * b;
 		max = max / factor;
-		int result = max * min;
 		
+		int result = max * min;
 		return result;
 	}
 
@@ -310,8 +310,9 @@ public class StrictFraction {
 			assert 0 != factor && 1 != factor;
 			result[0] = fraction[0] / factor;
 			result[1] = fraction[1] / factor;
+			
 		}
-		
+
 		return result;
 	}
 	
@@ -359,6 +360,7 @@ public class StrictFraction {
 		int bd = adder2[1];//分数b的分母
 		//通分
 		int min_common_multiple = StrictFraction.minCommonMultiple(ad, bd);
+		
 		am *= (min_common_multiple / ad);
 		bm *= (min_common_multiple / bd);
 		//相减

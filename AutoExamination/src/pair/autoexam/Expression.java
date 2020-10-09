@@ -14,8 +14,8 @@ public class Expression {
 	private String[] suffix;
 	private String result ;
 	
-	private static final int maxRepeat = 10000;//失败重试次数
-	private static final int maxRepeatMember = 100;//制造后缀表达式一个成员失败重试次数。
+	private static final long maxRepeat = 1000;//失败重试次数。经过验证100约支持1000~5000个表达式，1000支持10000个
+	private static final long maxRepeatMember = 100;//制造后缀表达式一个成员失败重试次数
 	private static final Random random = new Random(System.currentTimeMillis());
 	public static final String ADD = "+";
 	public static final String SUBTRACT = "-";
@@ -226,16 +226,21 @@ public class Expression {
 		assert random_number[1] >= 0;
 		assert random_number[2] >= 0;
 		
-		int random_op = random_number[0];
+		if(random_number[0] == 1) random_number[0]++;
+		if(random_number[1] == 1) random_number[1]++;
+		if(random_number[2] == 1) random_number[2]++;
+		
+		int random_op = random_number[0]; 
 		int random_fraction = random_number[1] + random_op;
 		int random_integer = random_number[2] + random_fraction;
 		
+		
 		int select = Expression.random.nextInt(random_integer);
-		if(select < 1)
+		if(select < random_op)
 		{
 			return operators.get(op_begin);
 		}
-		else if(select < 2)
+		else if(select < random_fraction)
 		{
 			String str = fraction.get();
 			while(str.equals(""))
@@ -244,6 +249,8 @@ public class Expression {
 		}
 		else 
 		{
+			assert select < random_integer;
+			
 			String str = integer.get();
 			while(str.equals(""))
 				str = integer.get();
@@ -275,7 +282,7 @@ public class Expression {
 	
 		int count_integer = operators.size() + 1 - count_fraction;
 	
-		int retry = 0;//记录失败重试次数
+		long retry = 0;//记录失败重试次数
 		
 		int op_index = 0;
 		Stack<String> calculate = new Stack<>(String.class);//运算中的后缀表达式，所有运算符都已经运算数字，只剩下结果在栈中
@@ -305,7 +312,7 @@ public class Expression {
 						switch(member) {
 						case Expression.ADD:
 						{
-							result = StrictFraction.add(left, right, true);
+							result = StrictFraction.add(left, right, false);
 							success = op_enable.test(result);
 							break;
 						}
@@ -315,7 +322,7 @@ public class Expression {
 							if(com != -1)
 							{
 								assert 0 == com || 1 == com;
-								result = StrictFraction.subtract(left, right, true);
+								result = StrictFraction.subtract(left, right, false);
 								success = op_enable.test(result);
 							}
 							else
@@ -325,7 +332,7 @@ public class Expression {
 						}
 						case Expression.TIMES:
 						{
-							result = StrictFraction.times(left, right, true);
+							result = StrictFraction.times(left, right, false);
 							success = op_enable.test(result);
 							break;
 						}
@@ -336,7 +343,7 @@ public class Expression {
 								success = false;
 							else
 							{
-								result = StrictFraction.divide(left, right, true);
+								result = StrictFraction.divide(left, right, false);
 								success = op_enable.test(result);
 							}
 							break;
@@ -362,14 +369,50 @@ public class Expression {
 								calculate.push(right);
 							}
 							else if(str2 == Expression.ADD || str2 == Expression.SUBTRACT || str2 == Expression.TIMES || str2 == Expression.DIVIDE)
-							{//left 是表达式求值，必须入栈
+							{//left 是表达式求值，必须入栈，right则抛弃
 								calculate.push(left);
-								suffix.remove(suffix.size()-1);//除去left
+								suffix.remove(suffix.size()-1);
+								
+								//抛弃一个数字就增加一个数字名额
+								plus_count:
+								{
+									for(int i = 0 ; i < right.length(); i++)
+										if('/' ==  right.charAt(i))
+										{
+											count_fraction++;
+											break plus_count;
+										}
+									count_integer++;
+								}
+								
 							}
 							else
 							{
 								suffix.remove(suffix.size()-1);//除去left
 								suffix.remove(suffix.size()-1);//除去right
+								
+								//抛弃一个数字就增加一个数字名额
+								plus_count:
+								{
+									for(int i = 0 ; i < right.length(); i++)
+										if('/' ==  right.charAt(i))
+										{
+											count_fraction++;
+											break plus_count;
+										}
+									count_integer++;
+								}
+								//抛弃一个数字就增加一个数字名额
+								plus_count:
+								{
+									for(int i = 0 ; i < left.length(); i++)
+										if('/' ==  left.charAt(i))
+										{
+											count_fraction++;
+											break plus_count;
+										}
+									count_integer++;
+								}
 							}
 							retry++;
 						}
@@ -383,14 +426,49 @@ public class Expression {
 							calculate.push(right);
 						}
 						else if(str2 == Expression.ADD || str2 == Expression.SUBTRACT || str2 == Expression.TIMES || str2 == Expression.DIVIDE)
-						{//left 是表达式求值，必须入栈
+						{//left 是表达式求值，必须入栈，right则抛弃
 							calculate.push(left);
-							suffix.remove(suffix.size()-1);//除去left
+							suffix.remove(suffix.size()-1);
+							
+							//抛弃一个数字就增加一个数字名额
+							plus_count:
+							{
+								for(int i = 0 ; i < right.length(); i++)
+									if('/' ==  right.charAt(i))
+									{
+										count_fraction++;
+										break plus_count;
+									}
+								count_integer++;
+							}
 						}
 						else
 						{
 							suffix.remove(suffix.size()-1);//除去left
 							suffix.remove(suffix.size()-1);//除去right
+							
+							//抛弃一个数字就增加一个数字名额
+							plus_count:
+							{
+								for(int i = 0 ; i < right.length(); i++)
+									if('/' ==  right.charAt(i))
+									{
+										count_fraction++;
+										break plus_count;
+									}
+								count_integer++;
+							}
+							//抛弃一个数字就增加一个数字名额
+							plus_count:
+							{
+								for(int i = 0 ; i < left.length(); i++)
+									if('/' ==  left.charAt(i))
+									{
+										count_fraction++;
+										break plus_count;
+									}
+								count_integer++;
+							}
 						}
 						retry++;
 					}//end catch
@@ -426,7 +504,10 @@ public class Expression {
 						continue;
 					}
 				}
-				retry++;
+				else {
+					retry++;
+				}
+				
 			}//end else
 			
 		}//end while
@@ -461,7 +542,7 @@ public class Expression {
 				do {
 					i++;
 					ch = str.charAt(i);
-				}while('0' <= ch && ch <= '9');
+				}while('0' <= ch && ch <= '9' || '\'' == ch || '/' == ch);
 				stack.push(str.substring(begin, i));
 				i--;
 			}
@@ -478,7 +559,7 @@ public class Expression {
 		
 		return stack.toArray();
 	}
-	
+
 	@SuppressWarnings("unused")
 	private static String[] toSuffix(String[] infix)
 	{
@@ -551,16 +632,16 @@ public class Expression {
 				
 				switch(str) {
 				case Expression.ADD:
-					result = StrictFraction.add(left, right, true);
+					result = StrictFraction.add(left, right, false);
 					break;
 				case Expression.SUBTRACT:
-					result = StrictFraction.subtract(left, right, true);
+					result = StrictFraction.subtract(left, right, false);
 					break;
 				case Expression.TIMES:
-					result = StrictFraction.times(left, right, true);
+					result = StrictFraction.times(left, right, false);
 					break;
 				case Expression.DIVIDE:
-					result = StrictFraction.divide(left, right, true);
+					result = StrictFraction.divide(left, right, false);
 					break;
 				default:;
 				}
@@ -601,11 +682,12 @@ public class Expression {
 	{
 		ArrayList<Expression> array = new ArrayList<>();
 		Expression expression = null;
-		int retry = 0;
+		long retry = 0;
+
 		outer:
 		for(int i = 0; i < count; )
 		{
-			if(retry > count*Expression.maxRepeat)
+			if(retry > Expression.maxRepeat)
 				break;
 			expression = Expression.ofExpression(ops_count,count_fraction,fraction, integer, op_enable);
 			if(null == expression)
@@ -620,7 +702,7 @@ public class Expression {
 					Expression other = array.get(j);
 					if(expression.equals(other))
 					{
-						break  outer;
+						continue outer;
 					}
 				}
 				array.add(expression);
@@ -643,7 +725,8 @@ public class Expression {
 	}
 	public String getResult()
 	{
-		return this.result;
+		String str = this.result;
+		return str;
 	}
 	public String getSuffix()
 	{
