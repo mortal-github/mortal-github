@@ -14,8 +14,8 @@ public class Expression {
 	private String[] suffix;
 	private String result ;
 	
-	private static final long maxRepeat = 1000;//失败重试次数。经过验证100约支持1000~5000个表达式，1000支持10000个
-	private static final long maxRepeatMember = 100;//制造后缀表达式一个成员失败重试次数
+	private static final long maxRepeat = 1000;//失败重试次数。
+	private static final long maxRepeatMember = 100;//制造后缀表达式一个成员失败重试次数。
 	private static final Random random = new Random(System.currentTimeMillis());
 	public static final String ADD = "+";
 	public static final String SUBTRACT = "-";
@@ -671,6 +671,7 @@ public class Expression {
 			return null;
 		String[] inffix = Expression.toInfix(suffix);
 		String  result = Expression.calculate(suffix);
+		result = StrictFraction.parseString(StrictFraction.parseArray(result),true);
 		Expression expression = new Expression(inffix, suffix, result);
 		
 		return  expression;

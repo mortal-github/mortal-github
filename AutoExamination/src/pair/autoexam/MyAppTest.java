@@ -14,12 +14,28 @@ class MyAppTest {
 	@Test
 	void testCreateExpressionArray() {
 		
+//		//以下配置才能在22秒内生成10000到算术题
+//		int expression_count = 10000;
+//		int[] operators_count = new int[] {3};
+//		int fraction_count = 0;
+//		int min = 0;
+//		int max = 100;
+//		int unit = 100;
+		
+//以下配置在2秒内生成1000道算术题
 		int expression_count = 1000;
 		int[] operators_count = new int[] {3};
 		int fraction_count = 0;
 		int min = 0;
-		int max = 100;
+		int max = 10;
 		int unit = 100;
+//以下配置只能生成1000多道题(运行2~3秒)
+//int expression_count = 10000;
+//int[] operators_count = new int[] {3};
+//int fraction_count = 0;
+//int min = 0;
+//int max = 10;
+//int unit = 100;
 		
 		Expression[] expression = MyApp.createExpressionArray( expression_count, operators_count, fraction_count, min,  max, unit) ;
 		

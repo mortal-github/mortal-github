@@ -1,6 +1,11 @@
 package pair.autoexam;
 
 
+import static org.junit.Assert.assertNotNull;
+
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Random;
 
 import pair.autoexam.calculator.StrictFraction;
@@ -8,11 +13,171 @@ import pair.autoexam.throwable.StrictFractionCalculateException;
 import pair.autoexam.throwable.StrictFractionFormatException;
 
 public class MyApp {
-
+	private static String dir = System.getProperty("user.dir");
+	private static String exercises = "Exercised.txt";
+	private static String answer = "Answerfile.txt";
+	private static String grade = "Grade.txt";
+	
 	public static void main(String[] args)
 	{
-		// TODO mian app
+		//参数
+		int r = 10;
+		int n = 10;
+		Path e = null;
+		Path a = null;
+		//参数状态
+		boolean r_meet = false;
+		boolean n_meet = false;
+		boolean e_meet = false;
+		boolean a_meet = false;
+		//信息
+		String error  = "";
+		String info = "";
+		outer:
+		for(int i = 0 ; i< args.length; i++)
+		{
+			switch(args[i]) {
+			case "-r":
+				if(r_meet)
+				{
+					error += "option \"-r\" is repeat!\n";
+					break outer;
+				}
+				else
+				{
+					i++;
+					String number = args[i];
+					try {
+						r = Integer.valueOf(number);
+						r_meet = true;
+						break;
+					}catch(NumberFormatException excp)
+					{
+						error += "option -r parameter \""+number + "\"is not a correct integer.\n";
+						break outer;
+					}
+					
+				}
+			case "-n":
+				if(n_meet)
+				{
+					error += "option \"-n\" is repeat!\n";
+					break outer;
+				}
+				else
+				{
+					i++;
+					String number = args[i];
+					try {
+						n = Integer.valueOf(number);
+						n_meet = true;
+						break;
+					}catch(NumberFormatException excp)
+					{
+						error += "option -n parameter \""+ number + "\"is not a correct integer.\n";
+						break outer;
+					}
+					
+				}
+			case "-e":
+				if(e_meet)
+				{
+					error += "option \"-e\" is repeat!\n";
+					break outer;
+				}
+				else
+				{
+					i++;
+					String exrcisefile = args[i];
+					try {
+						e = Paths.get(exrcisefile);
+						e_meet = true;
+						break;
+					}catch(InvalidPathException exp)
+					{
+						error += "option -e parameter \""+ exrcisefile +"\" is invalid path.";
+						break outer;
+					}
+				}
+			case "-a":
+				if(a_meet)
+				{
+					error += "option \"-a\" is repeat!\n";
+					break outer;
+				}
+				else
+				{
+					i++;
+					String answerfile = args[i];
+					try {
+						a = Paths.get(answerfile);
+						a_meet = true;
+						break;
+					}catch(InvalidPathException exp)
+					{
+						error += "option -e parameter \""+ answerfile +"\" is invalid path.";
+						break outer;
+					}
+				}
+			default : 
+				error += args[i] + " is unkown options!";
+				break outer;
+			}//end siwtch
+		}//end for
 		
+		if(!error.equals(""))
+		{
+			//参数检查的错误信息
+			System.out.println(error);
+			return;
+		}
+		
+		if(r_meet || n_meet)
+		{
+			//要生成题目，就必须同时提供-r,-n
+			if(r_meet && n_meet)
+			{
+				//TODO 生成题目
+				return ;
+			}
+			else
+			{	
+				error += "miss option ";
+				if(r_meet == false)
+					error += "\"-r\"";
+				else
+				{
+					assert n_meet == false;
+					error += "\"-n\"";
+				}
+			}
+		}
+		else//不生成题目
+		{
+			//要比较答案肯定需要同时提供题目文件和答案文件
+			if(e_meet || a_meet)
+			{
+				if(e_meet && a_meet)
+				{
+					//TODO 比较答案
+					return ;
+				}
+				else
+				{
+					error += "miss option ";
+					if(e_meet == false)
+						error += "\"-e\"";
+				}
+			}
+			else
+			{
+				error += "你没有输入足够的选项";
+			}
+			
+		}
+		
+		//选项检查的错误信息
+		System.out.println(error);
 	}
 	
 	/*
