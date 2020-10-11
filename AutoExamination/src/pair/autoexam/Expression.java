@@ -684,10 +684,17 @@ public class Expression {
 		ArrayList<Expression> array = new ArrayList<>();
 		Expression expression = null;
 		long retry = 0;
-
+		int repeat_begin = 0;
+		int repeat_end = 100;
 		outer:
 		for(int i = 0; i < count; )
 		{
+			if(repeat_end < i)
+			{//限制查重范围，避免过度查重。
+				repeat_end++;
+				repeat_begin++;
+			}
+				
 			if(retry > Expression.maxRepeat)
 				break;
 			expression = Expression.ofExpression(ops_count,count_fraction,fraction, integer, op_enable);
@@ -698,7 +705,7 @@ public class Expression {
 			}
 			else
 			{
-				for(int j = 0; j < array.size(); j++)
+				for(int j = repeat_begin; j < repeat_end && j < array.size();  j++)
 				{
 					Expression other = array.get(j);
 					if(expression.equals(other))
