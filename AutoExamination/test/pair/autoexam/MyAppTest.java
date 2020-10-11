@@ -1,14 +1,14 @@
 package pair.autoexam;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 
 class MyAppTest {
 
 	@Test
 	void testMain() {
-		fail("Not yet implemented");
+		int n = 10000;
+		int r = 100;
+		MyApp.main(new String[] {"-n", n+"", "-r", r +""} );
 	}
 
 	@Test
