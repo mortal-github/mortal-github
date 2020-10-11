@@ -7,8 +7,8 @@ class MyAppTest {
 	@Test
 	void testMain() {
 		int n = 10000;
-		int r = 100;
-		MyApp.main(new String[] {"-n", n+"", "-r", r +""} );
+		int r = 30;
+		MyApp.main(new String[] {"-n", n+"", "-r", r+""} );
 	}
 
 	@Test
