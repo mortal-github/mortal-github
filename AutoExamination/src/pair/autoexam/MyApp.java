@@ -1,9 +1,9 @@
 package pair.autoexam;
 
-
-import static org.junit.Assert.assertNotNull;
-
-import java.nio.file.InvalidPathException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
@@ -13,171 +13,153 @@ import pair.autoexam.throwable.StrictFractionCalculateException;
 import pair.autoexam.throwable.StrictFractionFormatException;
 
 public class MyApp {
-	private static String dir = System.getProperty("user.dir");
-	private static String exercises = "Exercised.txt";
-	private static String answer = "Answerfile.txt";
-	private static String grade = "Grade.txt";
-	
+
 	public static void main(String[] args)
 	{
-		//参数
-		int r = 10;
 		int n = 10;
-		Path e = null;
-		Path a = null;
-		//参数状态
-		boolean r_meet = false;
-		boolean n_meet = false;
-		boolean e_meet = false;
-		boolean a_meet = false;
-		//信息
-		String error  = "";
-		String info = "";
-		outer:
-		for(int i = 0 ; i< args.length; i++)
+
+		int r = 10;
+		boolean bool_n = false;
+		boolean bool_r = false;
+		for(int i = 0 ; i < args.length; i++)
 		{
-			switch(args[i]) {
-			case "-r":
-				if(r_meet)
+			String arg = args[i];
+			switch(arg){
+			case "-n" :
+				if(bool_n)
 				{
-					error += "option \"-r\" is repeat!\n";
-					break outer;
-				}
-				else
-				{
-					i++;
-					String number = args[i];
-					try {
-						r = Integer.valueOf(number);
-						r_meet = true;
-						break;
-					}catch(NumberFormatException excp)
-					{
-						error += "option -r parameter \""+number + "\"is not a correct integer.\n";
-						break outer;
-					}
-					
-				}
-			case "-n":
-				if(n_meet)
-				{
-					error += "option \"-n\" is repeat!\n";
-					break outer;
-				}
-				else
-				{
-					i++;
-					String number = args[i];
-					try {
-						n = Integer.valueOf(number);
-						n_meet = true;
-						break;
-					}catch(NumberFormatException excp)
-					{
-						error += "option -n parameter \""+ number + "\"is not a correct integer.\n";
-						break outer;
-					}
-					
-				}
-			case "-e":
-				if(e_meet)
-				{
-					error += "option \"-e\" is repeat!\n";
-					break outer;
-				}
-				else
-				{
-					i++;
-					String exrcisefile = args[i];
-					try {
-						e = Paths.get(exrcisefile);
-						e_meet = true;
-						break;
-					}catch(InvalidPathException exp)
-					{
-						error += "option -e parameter \""+ exrcisefile +"\" is invalid path.";
-						break outer;
-					}
-				}
-			case "-a":
-				if(a_meet)
-				{
-					error += "option \"-a\" is repeat!\n";
-					break outer;
-				}
-				else
-				{
-					i++;
-					String answerfile = args[i];
-					try {
-						a = Paths.get(answerfile);
-						a_meet = true;
-						break;
-					}catch(InvalidPathException exp)
-					{
-						error += "option -e parameter \""+ answerfile +"\" is invalid path.";
-						break outer;
-					}
-				}
-			default : 
-				error += args[i] + " is unkown options!";
-				break outer;
-			}//end siwtch
-		}//end for
-		
-		if(!error.equals(""))
-		{
-			//参数检查的错误信息
-			System.out.println(error);
-			return;
-		}
-		
-		if(r_meet || n_meet)
-		{
-			//要生成题目，就必须同时提供-r,-n
-			if(r_meet && n_meet)
-			{
-				//TODO 生成题目
-				return ;
-			}
-			else
-			{	
-				error += "miss option ";
-				if(r_meet == false)
-					error += "\"-r\"";
-				else
-				{
-					assert n_meet == false;
-					error += "\"-n\"";
-				}
-			}
-		}
-		else//不生成题目
-		{
-			//要比较答案肯定需要同时提供题目文件和答案文件
-			if(e_meet || a_meet)
-			{
-				if(e_meet && a_meet)
-				{
-					//TODO 比较答案
+					System.out.println("-n 重复，请重新输入参数。");
 					return ;
 				}
 				else
 				{
-					error += "miss option ";
-					if(e_meet == false)
-						error += "\"-e\"";
+					i++;
+					arg = args[i];
+					try {
+						n = Integer.valueOf(arg);
+						bool_n = true;
+					}catch(NumberFormatException e)
+					{
+						System.out.println("-n 选项的参数：" + arg + " 格式不正确。");
+					}
 				}
+				break;
+			case "-r" :
+				if(bool_r)
+				{
+					System.out.println("-r 重复，请重新输入参数。");
+					return ;
+				}
+				else
+				{
+					i++;
+					arg = args[i];
+					try {
+						r = Integer.valueOf(arg);
+						bool_r = true;
+					}catch(NumberFormatException e)
+					{
+						System.out.println("-r 选项的参数：" + arg + " 格式不正确。");
+					}
+				}
+				break;
+			default :
+				System.out.println("暂时不支持的参数。");
 			}
-			else
-			{
-				error += "你没有输入足够的选项";
-			}
-			
 		}
 		
-		//选项检查的错误信息
-		System.out.println(error);
+		if(false == bool_n)
+			System.out.println("你没有提供-n选项，默认为10");
+		if(false == bool_r)
+			System.out.println("你没有提供-r选项，默认为10");
+		createAndOutputExpressionToFile(n,r);
+	}
+	
+	public static void createAndOutputExpressionToFile(int n, int r)
+	{
+//		//以下配置才能在22秒内生成10000到算术题
+//		int expression_count = 10000;
+//		int[] operators_count = new int[] {3};
+//		int fraction_count = 0;
+//		int min = 0;
+//		int max = 100;
+//		int unit = 100;
+		
+//以下配置在2秒内生成1000道算术题
+//		int expression_count = 1000;
+//		int[] operators_count = new int[] {3};
+//		int fraction_count = 0;
+//		int min = 0;
+//		int max = 10;
+//		int unit = 100;
+//以下配置只能生成1000多道题(运行2~3秒)
+//int expression_count = 10000;
+//int[] operators_count = new int[] {3};
+//int fraction_count = 0;
+//int min = 0;
+//int max = 10;
+		int expression_count = n;
+		int[] operators_count = new int[] {3};
+		int fraction_count = 0;
+		int min = 0;
+		int max = r;
+		int unit = 100;
+				
+		String dir = System.getProperty("user.dir");
+		Path exercises = Paths.get(dir, "Exercises.txt");
+		Path answers = Paths.get(dir, "Answers.txt");
+		
+		
+
+		try {
+			Files.deleteIfExists(exercises);
+			System.out.println("INFO:	成功删除旧文件：" + exercises);
+			Files.deleteIfExists(answers);
+			System.out.println("INFO:	成功删除旧文件：" + answers);
+			Files.createFile(exercises);
+			System.out.println("INFO:	成功创建新文件：" + exercises);
+			Files.createFile(answers);
+			System.out.println("INFO:	成功创建新文件：" + answers);
+			
+		} catch (IOException e) {
+			System.out.println( "ERROR: 文件删除和创建出现错误。\n");
+			//e.printStackTrace();
+		}
+		
+		try (PrintWriter exe = new PrintWriter(exercises.toString());
+			PrintWriter ans = new PrintWriter(answers.toString());){
+			System.out.println("INFO:	成功打开文件输出流。");
+			
+			System.out.println("INFO:	正在生成表达式。");
+			long millis = System.currentTimeMillis();
+			Expression[] expression = createExpressionArray(expression_count, operators_count,fraction_count,min, max,unit) ;
+			millis = System.currentTimeMillis() - millis;
+			System.out.println("INFO:	已经生成表达式，用时 " + millis + "毫秒。");
+			
+			System.out.println("INFO: 	正在将表达式输出到文件。" );
+			int i = 1;
+			for(Expression exp : expression)
+			{
+				String e = exp.getInffix();
+				String a = exp.getResult();
+				
+				exe.println(i + ". " + e + " = ");
+				ans.println(i + ". " + a);
+				i++;
+			}
+			System.out.println("INFO: 	已经将表达式输出到文件。" );
+			System.out.println("INFO: 	实际生成" + (i-1) + "个表达式，并计算答案。" );
+			if(i-1 < n)
+			{
+				System.out.println("提示: 	如果需要更多数学表达式，请增加-r参数。");
+				System.out.println("提示:	否则很难生成足够-n参数的数学表达式。");
+				System.out.println("提示: 	如果需要10000个数学表达式，请使-r参数大于或等于100。");
+			}
+			
+		} catch (FileNotFoundException e) {
+			System.out.println("ERROR:	无法打开文件输出流。");
+			//e.printStackTrace();
+		}
 	}
 	
 	/*
